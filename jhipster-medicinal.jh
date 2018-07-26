@@ -1,0 +1,147 @@
+entity Patient {
+	numAffiliation String,
+    nom String,
+    prenom String,
+    dateNaissance ZonedDateTime,
+    telephone String,
+    email String,
+    mineur Boolean
+}
+
+entity Payeur {
+	nomPayeur String,
+    prenomPayeur String,
+    telephonePayeur String,
+    emailPayeur String,
+    commentaires String,
+    typePayeur TypePayeur
+}
+
+entity Praticien {
+	nomPraticien String,
+    prenomPraticien String,
+    telephonePraticien String,
+    emailPraticien String,
+    affiliation String,
+    typePraticien TypePraticien
+}
+
+entity RendezVous {
+	dateRendezVous ZonedDateTime,
+    creneau Creneau
+}
+
+entity Creneau {
+	heureDebut Integer,
+    minDebut Integer,
+    heureFin Integer,
+    minFin Integer
+}
+entity Adresse {
+	numRue String,
+    nomRue String,
+    ville String,
+    codePostal String,
+    pays String,
+    typeAdresse TypeAdresse
+}
+
+
+enum TypeAdresse {
+	ADRESSEPRATICIEN,
+    ADRESSEPAYEUR,
+    ADRESSEPATIENT
+}
+
+enum TypePraticien {
+	INFIRMIER,
+    MEDECIN,
+    PHARMACIEN
+}
+enum TypePayeur {
+	ASSURANCE,
+    MUTUELLE,
+    ORGANISME
+}
+entity Referent {
+    nom String,
+    prenom String,
+    dateNaissance ZonedDateTime,
+    telephone String,
+    email String
+}
+
+entity Structure {
+	nomStructure String,
+    typeStructure TypeStructure
+}
+
+entity Dossier {
+	numeroDossier String,
+    dateCreation DateTime
+}
+
+entity Allergies {
+	nomAllergie String,
+    descriptifAllergie String
+}
+
+entity ActeMedical {
+	typeActe TypeActe,
+    nomActe String,
+    detailsActe String,
+    prixActe Double,
+    lieuActe Adresse,
+    dateActe ZonedDateTime,
+    praticien Praticien,
+    patient Patient,
+    prescription String
+}
+enum TypeActe {
+	VACCINATION,
+    CONTROLE,
+    SOINS
+}
+enum TypeStructure {
+	HOPITAL,
+    PHARMACIE,
+    DISPENSAIRE
+}
+//relation OneToMany
+relationship OneToMany {
+	Adresse to Patient,
+    Adresse to Payeur,
+    Adresse to Praticien,
+    Adresse to Structure,
+    Structure to Praticien,
+    Patient to RendezVous
+}
+// relation ManyToOne
+relationship ManyToOne {
+	Patient{habite} to Adresse,
+    Praticien{habite2} to Adresse,
+    Payeur {habite3} to Adresse,
+    Praticien to Structure,
+    //on associe l'allergie au dossier car un patient a un dossier
+    Allergie to Dossier,
+    RendezVous to Patient
+}
+
+relationship ManyToMany {
+	Patient to Referent,
+    Referent to Patient
+}
+
+relationship OneToOne {
+	Patient to Dossier
+} 
+// Set pagination options
+paginate Patient, Praticien, Payeur with infinite-scroll
+paginate RendezVous with pagination
+
+dto * with mapstruct
+
+// Set service options to all except few
+//service all with serviceImpl except Employee, Job
+// Set an angular suffix
+angularSuffix * with mySuffix
